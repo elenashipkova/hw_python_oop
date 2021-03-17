@@ -89,6 +89,7 @@ class CashCalculator(Calculator):
             return (f'Денег нет, держись: твой долг - '
                     f'{abs(currency_remained)} {curr_print[currency]}')
 
+
 cash_calculator = CashCalculator(1000)
 
 # дата в параметрах не указана,
