@@ -1,6 +1,7 @@
 import datetime as dt
 from typing import List, Union
 
+
 class Record:
     def __init__(self, amount, comment, date=None) -> None:
         self.amount = amount
@@ -12,6 +13,7 @@ class Record:
 
     def show_record(self):
         return f'{self.amount}, {self.date}, {self.comment}'
+
 
 class Calculator:
     def __init__(self, limit: float) -> None:
@@ -41,7 +43,8 @@ class Calculator:
             if last_week <= record.date <= current_mom:
                 last_week_amount += record.amount
         return last_week_amount
-  
+
+
 class CaloriesCalculator(Calculator):
     def __init__(self, limit: float) -> None:
         super().__init__(limit)
@@ -53,6 +56,7 @@ class CaloriesCalculator(Calculator):
                     f'но с общей калорийностью не более {cal_remained} кКал')
         else:
             return 'Хватит есть!'
+
 
 class CashCalculator(Calculator):
     USD_RATE = 60.0
@@ -79,10 +83,12 @@ class CashCalculator(Calculator):
         if cash_remained == 0:
             return 'Денег нет, держись'
         elif cash_remained > 0:
-            return f'На сегодня осталось {currency_remained} {curr_print[currency]}'
+            return (f'На сегодня осталось '
+                    f'{currency_remained} {curr_print[currency]}')
         else:
-            return f'Денег нет, держись: твой долг - {abs(currency_remained)} {curr_print[currency]}'
-            
+            return (f'Денег нет, держись: твой долг - '
+                    f'{abs(currency_remained)} {curr_print[currency]}')
+
 cash_calculator = CashCalculator(1000)
 
 # дата в параметрах не указана,
