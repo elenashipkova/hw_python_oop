@@ -104,7 +104,7 @@ class CashCalculator(Calculator):
 
         Parameters:
         currency (str): one of the strings - 'usd', 'eur', 'rub'
-        
+       
         This method returns message about the status of the daily balance
         in the supported currency."""
 
