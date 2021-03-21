@@ -5,6 +5,7 @@ from typing import List
 
 date_format = '%d.%m.%Y'
 
+
 class Record:
     """Class Record to define the format of user spending records."""
 
@@ -30,10 +31,11 @@ class Calculator:
 
     def __init__(self, limit: int) -> None:
         """Set the required attributes for the calculator object.
-        
+
         Attributes:
         limit (int): the amount of daily spending/calorie limit set by the user
-        records (List[Record]): list for storing records of expenses amounts or calories
+        records (List[Record]): list for storing records of expenses amounts
+        or calories
         today (dt.date.today()): current date
         """
 
@@ -47,7 +49,7 @@ class Calculator:
         self.records.append(record)
 
     def get_today_stats(self) -> int:
-        """Method get_today_stats() to calculate expences/calories for today."""
+        """Method get_today_stats() calculates expences/calories for today."""
 
         today_stats = []
         for record in self.records:
@@ -56,13 +58,15 @@ class Calculator:
         return sum(today_stats)
 
     def get_today_remained(self) -> float:
-        """Method get_today_remained() to calculate the available cash/calorie limit."""
+        """Method get_today_remained() calculates the available
+        cash/calorie limit."""
 
         remained = self.limit - self.get_today_stats()
         return remained
 
     def get_week_stats(self) -> int:
-        """Method get_week_stats() to calculate the amount of money spent/calories for the week."""
+        """Method get_week_stats() calculates the amount of
+        money spent/calories for the week."""
 
         week_ago = self.today - dt.timedelta(days=7)
         week_stats = []
@@ -84,7 +88,7 @@ class CaloriesCalculator(Calculator):
             return ('Сегодня можно съесть что-нибудь ещё, '
                     f'но с общей калорийностью не более {cal_remained} кКал')
         return 'Хватит есть!'
-            
+
 
 class CashCalculator(Calculator):
     """Class CashCalculator extended class Calculator.
@@ -95,11 +99,12 @@ class CashCalculator(Calculator):
     RUB_RATE = 1.0
 
     def get_today_cash_remained(self, currency: str) -> str:
-        """Method get_today_cash_remained(currency) applied method get_today_remained().
-        
+        """Method get_today_cash_remained(currency)
+        applied method get_today_remained().
+    
         Parameters:
         currency (str): one of the strings - 'usd', 'eur', 'rub'
-        
+       
         This method returns message about the status of the daily balance
         in the supported currency."""
 
