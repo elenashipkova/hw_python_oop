@@ -101,10 +101,10 @@ class CashCalculator(Calculator):
     def get_today_cash_remained(self, currency: str) -> str:
         """Method get_today_cash_remained(currency)
         applied method get_today_remained().
-    
+
         Parameters:
         currency (str): one of the strings - 'usd', 'eur', 'rub'
-       
+        
         This method returns message about the status of the daily balance
         in the supported currency."""
 
