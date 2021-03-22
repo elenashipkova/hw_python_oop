@@ -1,27 +1,25 @@
 """Money and Calorie Calculator."""
-
 import datetime as dt
-from typing import List
+from typing import List, Tuple, Dict, Optional
 
-date_format = '%d.%m.%Y'
+DATE_FORMAT = '%d.%m.%Y'
 
 
 class Record:
     """Class Record to define the format of user spending records."""
 
-    def __init__(self, amount: int, comment: str, date=None) -> None:
+    def __init__(self, amount: int, comment: str, date: Optional[str]=None) -> None:
         """Set the required attributes for the record object.
 
         Attributes:
         amount (int): amount of spend money or calories consumed
         comment (str): user's text about the amounts
-        date (None): if date is None, assign default value - current date
+        date (Optional[str]): if date is None, assign default value - current date
         """
-
         self.amount = amount
         self.comment = comment
         if date is not None:
-            self.date = dt.datetime.strptime(date, date_format).date()
+            self.date = dt.datetime.strptime(date, DATE_FORMAT).date()
         else:
             self.date = dt.date.today()
 
@@ -38,51 +36,35 @@ class Calculator:
         or calories
         today (dt.date.today()): current date
         """
-
         self.limit = limit
         self.records: List[Record] = []
-        self.today = dt.date.today()
 
     def add_record(self, record):
-        """Method add_record() to add record to the list records."""
-
         self.records.append(record)
 
     def get_today_stats(self) -> int:
-        """Method get_today_stats() calculates expences/calories for today."""
-
-        today_stats = []
-        for record in self.records:
-            if record.date == self.today:
-                today_stats.append(record.amount)
-        return sum(today_stats)
+        """Calculate expences/calories for today."""
+        return sum(record.amount for record in self.records
+                   if record.date == dt.date.today())
 
     def get_today_remained(self) -> float:
-        """Method get_today_remained() calculates the available
-        cash/calorie limit."""
-
+        """Calculate the available cash/calorie limit."""
         remained = self.limit - self.get_today_stats()
         return remained
 
     def get_week_stats(self) -> int:
-        """Method get_week_stats() calculates the amount of
-        money spent/calories for the week."""
-
-        week_ago = self.today - dt.timedelta(days=7)
-        week_stats = []
-        for record in self.records:
-            if week_ago < record.date <= self.today:
-                week_stats.append(record.amount)
-        return sum(week_stats)
+        """Calculate the amount of money spent/calories for the week."""
+        week_ago = dt.date.today() - dt.timedelta(days=7)
+        return sum(record.amount for record in self.records
+                   if week_ago < record.date <= dt.date.today())
 
 
 class CaloriesCalculator(Calculator):
-    """Class CaloriesCalculator extended class Calculator."""
+    """Class CaloriesCalculator calculate amount of the calories consumed
+    and remained based on the limit."""
 
     def get_calories_remained(self) -> str:
-        """Method get_calories_remained() applied metod get_today_remained()
-        This method returns message about the calorie limit status."""
-
+        """Return message about the calorie limit status."""
         cal_remained = self.get_today_remained()
         if cal_remained > 0:
             return ('Сегодня можно съесть что-нибудь ещё, '
@@ -91,38 +73,32 @@ class CaloriesCalculator(Calculator):
 
 
 class CashCalculator(Calculator):
-    """Class CashCalculator extended class Calculator.
-    Added currency exchange rate constants"""
-
+    """Class CashCalculator calculate cash expenses and the remaining
+    avialable limit in the supported currency.
+    Contain currency exchange rate constants."""
     USD_RATE = 60.0
     EURO_RATE = 70.0
     RUB_RATE = 1.0
 
     def get_today_cash_remained(self, currency: str) -> str:
-        """Method get_today_cash_remained(currency)
-        applied method get_today_remained().
+        """Return message about the status of the daily balance
+        in the supported currency.
 
         Parameters:
-        currency (str): one of the strings - 'usd', 'eur', 'rub'
-
-        This method returns message about the status of the daily balance
-        in the supported currency."""
-
-        currencies = {
-            'usd': (CashCalculator.USD_RATE, 'USD'),
-            'eur': (CashCalculator.EURO_RATE, 'Euro'),
-            'rub': (CashCalculator.RUB_RATE, 'руб'),
+        currency (str): one of the strings - 'usd', 'eur', 'rub'."""
+        currencies: Dict[str, Tuple[float, str]] = {
+            'usd': (self.USD_RATE, 'USD'),
+            'eur': (self.EURO_RATE, 'Euro'),
+            'rub': (self.RUB_RATE, 'руб'),
         }
-        cash_remained = self.get_today_remained()
-        if cash_remained == 0:
+        currency_remained = self.get_today_remained()
+        if currency_remained == 0:
             return 'Денег нет, держись'
         if currency not in currencies:
             return f'Неподдерживаемый тип валюты {currency}'
         rate, name = currencies[currency]
-        currency_remained = round(cash_remained / rate, 2)
-        if cash_remained > 0:
-            return f'На сегодня осталось {currency_remained} {name}'
-        else:
-            cash_remained = abs(currency_remained)
-            return ('Денег нет, держись: твой долг - '
-                    f'{cash_remained} {name}')
+        currency_remained = round(currency_remained / rate, 2)
+        if currency_remained < 0:
+            debt = abs(currency_remained)
+            return f'Денег нет, держись: твой долг - {debt} {name}'
+        return f'На сегодня осталось {currency_remained} {name}'
