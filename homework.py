@@ -8,14 +8,17 @@ DATE_FORMAT = '%d.%m.%Y'
 class Record:
     """Class Record to define the format of user spending records."""
 
-    def __init__(self, amount: int, comment: str, date: Optional[str]=None) -> None:
+    def __init__(self,
+                 amount: int,
+                 comment: str,
+                 date: Optional[str] = None) -> None:
         """Set the required attributes for the record object.
 
         Attributes:
         amount (int): amount of spend money or calories consumed
         comment (str): user's text about the amounts
-        date (Optional[str]): if date is None, assign default value - current date
-        """
+        date (Optional[str]): if date is None, assign default value -
+        current date"""
         self.amount = amount
         self.comment = comment
         if date is not None:
