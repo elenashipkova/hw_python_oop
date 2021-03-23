@@ -9,16 +9,17 @@ class Record:
     """Class Record to define the format of user spending records."""
 
     def __init__(self,
-                 amount: int,
+                 amount: float,
                  comment: str,
                  date: Optional[str] = None) -> None:
         """Set the required attributes for the record object.
 
         Attributes:
-        amount (int): amount of spend money or calories consumed
+        amount (float): amount of spend money or calories consumed
         comment (str): user's text about the amounts
         date (Optional[str]): if date is None, assign default value -
-        current date"""
+        current date
+        """
         self.amount = amount
         self.comment = comment
         if date is not None:
@@ -45,21 +46,23 @@ class Calculator:
     def add_record(self, record):
         self.records.append(record)
 
-    def get_today_stats(self) -> int:
+    def get_today_stats(self) -> float:
         """Calculate expences/calories for today."""
+        today = dt.date.today()
         return sum(record.amount for record in self.records
-                   if record.date == dt.date.today())
+                   if record.date == today)
 
     def get_today_remained(self) -> float:
         """Calculate the available cash/calorie limit."""
         remained = self.limit - self.get_today_stats()
         return remained
 
-    def get_week_stats(self) -> int:
+    def get_week_stats(self) -> float:
         """Calculate the amount of money spent/calories for the week."""
-        week_ago = dt.date.today() - dt.timedelta(days=7)
+        today = dt.date.today()
+        week_ago = today - dt.timedelta(days=7)
         return sum(record.amount for record in self.records
-                   if week_ago < record.date <= dt.date.today())
+                   if week_ago < record.date <= today)
 
 
 class CaloriesCalculator(Calculator):
@@ -78,7 +81,9 @@ class CaloriesCalculator(Calculator):
 class CashCalculator(Calculator):
     """Class CashCalculator calculate cash expenses and the remaining
     avialable limit in the supported currency.
-    Contain currency exchange rate constants."""
+
+    Contain currency exchange rate constants.
+    """
     USD_RATE = 60.0
     EURO_RATE = 70.0
     RUB_RATE = 1.0
@@ -88,7 +93,8 @@ class CashCalculator(Calculator):
         in the supported currency.
 
         Parameters:
-        currency (str): one of the strings - 'usd', 'eur', 'rub'."""
+        currency (str): one of the strings - 'usd', 'eur', 'rub'.
+        """
         currencies: Dict[str, Tuple[float, str]] = {
             'usd': (self.USD_RATE, 'USD'),
             'eur': (self.EURO_RATE, 'Euro'),
